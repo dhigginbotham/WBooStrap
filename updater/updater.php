@@ -12,7 +12,7 @@
  *
   		Theme Name: Example  
 		Theme URI: http://example.com/  
-		Github Theme URI: https://github.com/username/repo
+		Github Theme URI: http://github.com/username/repo
 		Description: My Example Theme
 		Author: person
 		Version: v1.0.0
@@ -37,6 +37,7 @@ if (is_admin() && current_user_can('update_themes')){
 					require_once('assets.php');
 					add_filter('site_transient_update_themes', array($this,'transient_update_themes_filter'));
 					add_filter('upgrader_source_selection', array($this,'upgrader_source_selection_filter', 10, 3));
+					add_action('http_request_args',array($this,'cancel_ssl_http_request_args'), 10, 2);
 				}
 			}
 
@@ -79,7 +80,7 @@ if (is_admin() && current_user_can('update_themes')){
 						$data->response[$theme_key]['error'] = 'Incorrect github project url.  Format should be (no trailing slash): <code style="background:#FFFBE4;">https://github.com/&lt;username&gt;/&lt;repo&gt;</code>';
 						continue;
 					}
-					$url = 'https://github.com/api/v2/json/repos/show/' . 
+					$url = 'http://github.com/api/v2/json/repos/show/' . 
 							$matches['username'] . '/' . $matches['repo'] .
 							'/tags';
 					
@@ -176,6 +177,12 @@ if (is_admin() && current_user_can('update_themes')){
 					}
 				}
 				return $source;
+			}
+
+			
+			public function cancel_ssl_http_request_args($args, $url) {
+				$args['sslverify'] = false;
+				return $args;
 			}
 
 		}//end class
