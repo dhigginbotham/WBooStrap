@@ -17,7 +17,12 @@ add_image_size( 'bones-thumb-300', 300, 100, true );
 
 //menus
 add_action('init', 'register_custom_menu');
- 
+
+/**
+ * register_custom_menu
+ * @author : Ohad Raz
+ * @since : 0.1
+ */
 function register_custom_menu() {
 	register_nav_menu('top_menu', __('Top Menu'));
 	register_nav_menu('footer_menu', __('Footer Menu'));
@@ -39,18 +44,21 @@ function top_menu_fallback(){
 }
 
 
-//comments callback
-if ( ! function_exists( 'WBootStrap_comment' ) ) {
+//comments 
 /**
- * Template for comments and pingbacks.
- *
- * To override this walker in a child theme without modifying the comments template
- * simply create your own bootstrap_comment(), and that function will be used instead.
- *
- * Used as a callback by wp_list_comments() for displaying the comments.
- *
- * @since WBootStrap 0.1
- */
+  * WBootStrap_comment callback
+  * 
+  * Used as a callback by wp_list_comments() for displaying the comments.
+  * To override this walker in a child theme without modifying the comments template
+  * simply create your own WBootStrap_comment(), and that function will be used instead.
+  * 
+  * @author Ohad raz
+  * @since 0.1
+  * @param [type] $comment [description]
+  * @param [type] $args    [description]
+  * @param [type] $depth   [description]
+  */
+if ( ! function_exists( 'WBootStrap_comment' ) ) {
 	function WBootStrap_comment( $comment, $args, $depth ) {
 		$GLOBALS['comment'] = $comment;
 		switch ( $comment->comment_type ) {
