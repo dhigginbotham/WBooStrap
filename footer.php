@@ -1,7 +1,11 @@
 <?php
-/*
+/**
+ * Footer Template
+ * 
  * @package: WBootStrap
- * @file: footer.php
+ * @file: single.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
 		<footer role="contentinfo">

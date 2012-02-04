@@ -1,7 +1,11 @@
 <?php
-/*
+/**
+ * Index Template
+ * 
  * @package: WBootStrap
  * @file: index.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
 <?php get_header(); ?>

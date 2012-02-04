@@ -1,7 +1,11 @@
 <?php
-/*
+/**
+ * Comments Template
+ * 
  * @package: WBootStrap
  * @file: comments.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
  <?php

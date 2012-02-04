@@ -1,7 +1,11 @@
 <?php
-/*
+/**
+ * Single Post Template
+ * 
  * @package: WBootStrap
  * @file: single.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
 <?php get_header(); ?>

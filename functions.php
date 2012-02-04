@@ -1,8 +1,11 @@
 <?php
-/*
+/**
+ * Theme Functions
+ * 
  * @package: WBootStrap
  * @file: functions.php
- * @since WBootStrap 0.1
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
 <?php

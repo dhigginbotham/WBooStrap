@@ -1,9 +1,12 @@
 <?php
-/*
+/**
+ * Header Template
+ * 
  * @package: WBootStrap
  * @file: header.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
-
 ?>
 <!DOCTYPE html>
 <!--[if IEMobile 7 ]> <html <?php language_attributes(); ?>class="no-js iem7"> <![endif]-->

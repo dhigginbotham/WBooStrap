@@ -1,7 +1,11 @@
 <?php
-/*
+/**
+ * SideBar Template
+ * 
  * @package: WBootStrap
  * @file: sidebar.php
+ * @author Ohad Raz 
+ * @since 0.1
  */
  ?>
 <div class="span4">
