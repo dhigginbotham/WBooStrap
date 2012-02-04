@@ -47,7 +47,6 @@ function top_menu_fallback(){
 }
 
 
-//comments 
 /**
   * WBootStrap_comment callback
   * 
@@ -109,8 +108,3 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
 		}//end switch
 	}//end function 
 } // ends if
-
-//theme github updater
-if (is_admin()){
-	include_once('updater/updater.php');
-}
