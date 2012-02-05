@@ -1,9 +1,9 @@
 <?php
 /**
- * Archive Template
+ * search from Template
  * 
  * @package: WBootStrap
- * @file: archive.php
+ * @file: searchfrom.php
  * @author Ohad Raz 
  * @since 0.1
  */

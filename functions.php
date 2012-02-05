@@ -14,7 +14,7 @@
 
 add_theme_support('post-thumbnails');
 // Thumbnail sizes
-add_image_size( 'wpbs-featured', 580, 300, true );
+add_image_size( 'WBootStrap', 580, 200, true );
 add_image_size( 'bones-thumb-600', 600, 150, false );
 add_image_size( 'bones-thumb-300', 300, 100, true );
 
@@ -205,3 +205,4 @@ if (!function_exists('WBootStrap_breadcrumb')){
 		}
 	}//end function 
 }//end if
+
