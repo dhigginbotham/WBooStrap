@@ -26,29 +26,15 @@
 
 <?php if ( have_comments() ){ ?>
 	
-	<h3 id="comments"><?php comments_number(__('<span>No</span> Responses','WBootStrap'), __('<span>One</span> Response','WBootStrap'), __('<span>%</span> Responses','WBootStrap') ); _e('to &#8220;','WBootStrap'); the_title(); _e('&#8221;','WBootStrap'); ?></h3>
+	<h3 id="comments"><?php comments_number(__('<span>No</span> Responses','WBootStrap'), __('<span>One</span> Response','WBootStrap'), __('<span>%</span> Responses','WBootStrap') ); _e(' to &#8220;','WBootStrap'); the_title(); _e('&#8221;','WBootStrap'); ?></h3>
 
-	<nav id="comment-nav">
-		<ul class="clearfix">
-	  		<li><?php previous_comments_link(__('Older Comments','WBootStrap')) ?></li>
-	  		<li><?php next_comments_link(__('Newer Comments','WBootStrap')) ?></li>
-	 	</ul>
-	</nav>
-	
-	<ol class="commentlist">
+	<ul class="commentlist">
 		<?php wp_list_comments(array(
 			'callback' => 'WBootStrap_comment'
 			)); 
 		?>
-	</ol>
+	</ul>
 	
-	<nav id="comment-nav">
-		<ul class="clearfix">
-	  		<li><?php previous_comments_link(__('Older Comments','WBootStrap')) ?></li>
-	  		<li><?php next_comments_link(__('Newer Comments','WBootStrap')) ?></li>
-		</ul>
-	</nav>
-  
 	<?php }elseif ( ! comments_open() && ! is_page() && post_type_supports( get_post_type(), 'comments' ) ) { ?>
 		<!-- If comments are closed. -->
 		<p class="alert-message info"><?php _e('Comments are closed','WBootStrap'); ?>.</p>
