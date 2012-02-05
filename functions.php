@@ -108,3 +108,100 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
 		}//end switch
 	}//end function 
 } // ends if
+
+/**
+ * WBootStrap_breadcrumb function
+ * 
+ * Used for displaying breadcrumb.
+ * To override this walker in a child theme without modifying the template
+ * simply create your own WBootStrap_breadcrumb(), and that function will be used instead.
+ * 
+ * 
+ * @author Ohad Raz
+ * @since 0.1
+ */
+if (!function_exists('WBootStrap_breadcrumb')){
+	function WBootStrap_breadcrumb() {
+		 
+		$delimiter = '<span class="divider">/</span>';
+		$home = __('Home','WBootStrap'); // text for the 'Home' link
+		$before = '<li class="active">'; // tag before the current crumb
+		$after = '</li>'; // tag after the current crumb
+		if ( !is_home() && !is_front_page() || is_paged() ) {
+			$retVal =  '<div id="crumbs"><ul class="breadcrumb">';
+
+		    global $post;
+		    $homeLink = get_bloginfo('url');
+		    $retVal .= '<li><a href="' . $homeLink . '">' . $home . '</a> ' . $delimiter . '</li> ';
+
+			if ( is_category() ) {
+		     	global $wp_query;
+		      	$cat_obj = $wp_query->get_queried_object();
+		      	$thisCat = $cat_obj->term_id;
+		      	$thisCat = get_category($thisCat);
+		      	$parentCat = get_category($thisCat->parent);
+		      	if ($thisCat->parent != 0) echo(get_category_parents($parentCat, TRUE, ' ' . $delimiter . ' '));
+		      		$retVal .= $before . __('Archive by category','WBootStrap').' "' . single_cat_title('', false) . '"' . $after;
+		    } elseif ( is_day() ) {
+		      	$retVal .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a> ' . $delimiter . '</li> ';
+		      	$retVal .= '<li><a href="' . get_month_link(get_the_time('Y'),get_the_time('m')) . '">' . get_the_time('F') . '</a> ' . $delimiter . '</li> ';
+		      	$retVal .= $before . get_the_time('d') . $after;
+		    } elseif ( is_month() ) {
+		      	$retVal .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a> ' . $delimiter . '</li> ';
+		      	$retVal .= $before . get_the_time('F') . $after;
+		    } elseif ( is_year() ) {
+				$retVal .= $before . get_the_time('Y') . $after;
+		    } elseif ( is_single() && !is_attachment() ) {
+		    	if ( get_post_type() != 'post' ) {
+		        	$post_type = get_post_type_object(get_post_type());
+		        	$slug = $post_type->rewrite;
+		        	$retVal .= '<li><a href="' . $homeLink . '/' . $slug['slug'] . '/">' . $post_type->labels->singular_name . '</a> ' . $delimiter . '</li> ';
+		        	$retVal .= $before . get_the_title() . $after;
+		      	} else {
+		        	$cat = get_the_category(); $cat = $cat[0];
+		        	$retVal .= get_category_parents($cat, TRUE, ' ' . $delimiter . ' ');
+		        	$retVal .= $before . get_the_title() . $after;
+		     	}
+		    } elseif ( !is_single() && !is_page() && get_post_type() != 'post' && !is_404() ) {
+		    	$post_type = get_post_type_object(get_post_type());
+		      	$retVal .= $before . $post_type->labels->singular_name . $after;
+		    } elseif ( is_attachment() ) {
+		    	$parent = get_post($post->post_parent);
+		      	$cat = get_the_category($parent->ID); $cat = $cat[0];
+		      	$retVal .= get_category_parents($cat, TRUE, ' ' . $delimiter . ' ');
+		      	$retVal .= '<li><a href="' . get_permalink($parent) . '">' . $parent->post_title . '</a> ' . $delimiter . '</li> ';
+		     	$retVal .= $before . get_the_title() . $after;
+			} elseif ( is_page() && !$post->post_parent ) {
+		    	$retVal .= $before . get_the_title() . $after;
+		    } elseif ( is_page() && $post->post_parent ) {
+				$parent_id  = $post->post_parent;
+		    	$breadcrumbs = array();
+		    	while ($parent_id) {
+		        	$page = get_page($parent_id);
+		        	$breadcrumbs[] = '<li><a href="' . get_permalink($page->ID) . '">' . get_the_title($page->ID) . '</a></li>';
+		        	$parent_id  = $page->post_parent;
+		     	}
+		      	$breadcrumbs = array_reverse($breadcrumbs);
+		      	foreach ($breadcrumbs as $crumb) $retVal .= $crumb . ' ' . $delimiter . ' ';
+		      	$retVal .= $before . get_the_title() . $after;
+		    } elseif ( is_search() ) {
+		    	$retVal .= $before . __('Search results for','WBootStrap').' "' . get_search_query() . '"' . $after;
+		    } elseif ( is_tag() ) {
+				$retVal .= $before . __('Posts tagged','WBootStrap').' "' . single_tag_title('', false) . '"' . $after;
+		    } elseif ( is_author() ) {
+				global $author;
+		    	$userdata = get_userdata($author);
+				$retVal .= $before . __('Articles posted by ','WBootStrap') . $userdata->display_name . $after;
+		    } elseif ( is_404() ) {
+				$retVal .= $before . __('Error 404','WBootStrap') . $after;
+		    }
+		    if ( get_query_var('paged') ) {
+		    	if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) $retVal .= ' (';
+					$retVal .= __('Page') . ' ' . get_query_var('paged');
+		      	if ( is_category() || is_day() || is_month() || is_year() || is_search() || is_tag() || is_author() ) $retVal .= ')';
+		    }
+		    $retVal .= '</ul></div>';
+		    echo apply_filters('WBootStrap_breadcrumb_filter',$retVal);
+		}
+	}//end function 
+}//end if
