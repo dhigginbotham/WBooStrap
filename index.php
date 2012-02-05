@@ -35,16 +35,16 @@
 				<?php comments_template(); 
 				
 			endwhile;
-				 if (function_exists('page_navi')) { // if expirimental feature is active 
-					page_navi(); // use the page navi function 
-				 } else { // if it is disabled, display regular wp prev & next links ?>
+				if (function_exists('WBootStrap_pagination')) { // if expirimental feature is active 
+					WBootStrap_pagination(); // use the WBootStrap_pagination function 
+				} else { // if it is disabled, display regular wp prev & next links ?>
 					<nav class="wp-prev-next">
 						<ul class="clearfix">
 							<li class="prev-link"><?php next_posts_link(_e('&laquo; Older Entries', "WBootStrap")) ?></li>
 							<li class="next-link"><?php previous_posts_link(_e('Newer Entries &raquo;', "WBootStrap")) ?></li>
 						</ul>
 					</nav>
-				<?php } 
+				<?php }
 
 			 else : ?>
 					

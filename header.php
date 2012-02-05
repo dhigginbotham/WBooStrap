@@ -32,8 +32,9 @@
 			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<link rel="profile" href="http://gmpg.org/xfn/11" />
-		//rtl with responsive support
-		<?php if (is_rtl()) {
+		
+		<?php //rtl with responsive support
+		if (is_rtl()) {
 			?>
 			<link rel="stylesheet" href="bootstrap-rtl.min.css">
 			<link rel="stylesheet" href="bootstrap-responsive-rtl.min.css">
@@ -43,7 +44,7 @@
 			<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/bootstrap.css">
 			<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.min.css">
 			<?php
-		}
+		}?>
 		
 		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/style.css">
 		<style>

@@ -1,3 +1,9 @@
 body {
   direction: rtl;
 }
+.children li.comment{
+	background-color: white;
+}
+ul.children li.comment{
+	background-color: white;
+}

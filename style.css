@@ -15,3 +15,20 @@ Tags: dark, light, white, black, gray, one-column, two-columns, left-sidebar, ri
 .logged-in .navbar-fixed-top{
 top: 28px !important;
 }
+
+/* comments */
+.comment-author{
+	float: left;
+}
+.comment-meta{
+	float: right;
+}
+.comment-content{
+	clear: both;
+    padding: 5px;
+}
+.vcard img.avatar { background: #fff; border:1px solid #aaa; padding: 5px;}
+ul.children li.comment{background-color: white;}
+ul.children li.comment ul.children li.comment{background-color: whiteSmoke;}
+ul.children li.comment ul.children li.comment ul.children li.comment{background-color: white;}
+ul.children li.comment ul.children li.comment ul.children li.comment ul.children li.comment{background-color: whiteSmoke;}
