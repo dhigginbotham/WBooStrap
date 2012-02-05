@@ -2,6 +2,7 @@
 /**
  * Template Name: Full-width, no sidebar
  * Description: A full-width template with no sidebar
+ * Full width Page Template
  * 
  * @package: WBootStrap
  * @file: page.php
