@@ -10,13 +10,53 @@
  ?>
 <?php
 
-//Add Thumbnail support
+/** Thumbnail support **/
 
-add_theme_support('post-thumbnails');
 // Thumbnail sizes
 add_image_size( 'WBootStrap', 580, 200, true );
-add_image_size( 'bones-thumb-600', 600, 150, false );
-add_image_size( 'bones-thumb-300', 300, 100, true );
+
+// Add Thumbnails in Manage Posts/Pages List
+if ( !function_exists('AddThumbColumn') && function_exists('add_theme_support') ) {
+    //Add Thumbnail support for post and page
+    add_theme_support('post-thumbnails', array( 'post', 'page' ) );
+    if (is_admin()){
+	    function AddThumbColumn($cols) {
+	        $cols['thumbnail'] = __('Thumbnail');
+	        return $cols;
+	    }
+	    function AddThumbValue($column_name, $post_id) {
+	        $width = (int) 35;
+	        $height = (int) 35;
+	        if ( 'thumbnail' == $column_name ) {
+	            // thumbnail of WP 2.9
+	            $thumbnail_id = get_post_meta( $post_id, '_thumbnail_id', true );
+	            // image from gallery
+	            $attachments = get_children( array('post_parent' => $post_id, 'post_type' => 'attachment', 'post_mime_type' => 'image') );
+	            if ($thumbnail_id)
+	                $thumb = wp_get_attachment_image( $thumbnail_id, array($width, $height), true );
+	            elseif ($attachments) {
+	                foreach ( $attachments as $attachment_id => $attachment ) {
+	                    $thumb = wp_get_attachment_image( $attachment_id, array($width, $height), true );
+	            	}
+				}
+	            if ( isset($thumb) && $thumb ) {
+	            	echo $thumb;
+				} else {
+	            	echo __('None');
+				}
+			}
+	    }
+	    // for posts
+	    add_filter( 'manage_posts_columns', 'AddThumbColumn' );
+	    add_action( 'manage_posts_custom_column', 'AddThumbValue', 10, 2 );
+
+	    // for pages
+	    add_filter( 'manage_pages_columns', 'AddThumbColumn' );
+	    add_action( 'manage_pages_custom_column', 'AddThumbValue', 10, 2 );
+	}
+}
+/** End Thumbnail support **/
+
 
 //menus
 add_action('init', 'register_custom_menu');
@@ -30,11 +70,11 @@ function register_custom_menu() {
 	register_nav_menu('top_menu', __('Top Menu'));
 	register_nav_menu('footer_menu', __('Footer Menu'));
 }
-
-/*
-* top menu fallback
-* @since WBootStrap 0.1
-*/
+/**
+ * top_menu_fallback 
+ * @author Ohad Raz
+ * @since 0.1
+ */
 function top_menu_fallback(){
 	$top_menu =	'
 	<ul class="nav">
@@ -45,6 +85,54 @@ function top_menu_fallback(){
 	';
 	echo apply_filters('top_menu_fallback_filter',$top_menu);
 }
+/** End Menus support **/
+
+
+/** sidebar Support **/
+
+// Custom Admin Sidebar Switcher
+function sidebar_switcher() {
+	global $pagenow;
+	if ($pagenow == 'widgets.php'){
+		?>
+		<script type="text/javascript">
+		jQuery("document").ready(function(){
+			var sidebars = new Array(); // Create array to hold our list of widget areas
+			var selectorHTML, name; // Declaring variables isn't necessary in JavaScript, but it's good practice
+		 
+			jQuery('.widget-liquid-right .sidebar-name h3').each(function(index) {
+				name = jQuery(this).html(); // Get the name of each widget area
+				name = name.replace(/\s*<span>.*<\/span>/,''); // Remove extra <span> block from name
+				sidebars.push(name); // Add the name to our array
+			});
+		 
+			jQuery('.widget-liquid-right .widgets-holder-wrap').hide(); // Hide all the widget areas in list
+			jQuery('.widget-liquid-right .widgets-holder-wrap:first').show(); // Show the first
+		 
+			// Start <select> block. Position to the right of the "Widgets" heading.
+			selectorHTML = "<select id=\"sidebarSelector\" style=\"position: absolute; left: 400px; top: 68px;\">\n";
+		 
+			var count = 0;
+			for ( var i in sidebars ) // Add option for each widgetized area
+				selectorHTML = selectorHTML + "<option value=\"" + count++ + "\">" + sidebars[i] + "</option>\n"; // Store the index of the widget area in the 'value' attribute
+		 
+			selectorHTML = selectorHTML + "</select>"; // Close the <select> block
+		 
+			jQuery('div.wrap').append(selectorHTML); // Insert it into the DOM
+		 
+			jQuery('#sidebarSelector').change(function(){ // When the user selects something from the select box...
+				index = jQuery(this).val(); // Figure out which one they chose
+				jQuery('.widget-liquid-right .widgets-holder-wrap').hide(); // Hide all the widget areas
+				jQuery('.widget-liquid-right .widgets-holder-wrap:eq(' + index + ')').show(); // And show only the corresponding one
+			});
+		});
+		</script>
+		<?php
+	}
+}
+add_action('admin_footer', 'sidebar_switcher');
+
+
 
 
 /**
@@ -73,7 +161,7 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
 				break;
 			default :
 				?>
-				<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
+				<li <?php comment_class('well'); ?> id="li-comment-<?php comment_ID(); ?>">
 					<article id="comment-<?php comment_ID(); ?>" class="comment">
 						<footer>
 							<div class="comment-author vcard">
@@ -108,6 +196,53 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
 		}//end switch
 	}//end function 
 } // ends if
+
+/**
+ * WBootStrap_pagination 
+ * 
+ * Used for displaying Pagination nav links.
+ * To override this walker in a child theme without modifying the template
+ * simply create your own WBootStrap_pagination(), and that function will be used instead.
+ * 
+ * @author Ohad Raz
+ * @since 0.1
+ * @param  integer  $pages Max number of pages
+ * @param  integer $range how many numbers to display
+ */
+if (!function_exists('WBootStrap_pagination')){
+	function WBootStrap_pagination($pages = '', $range = 4){
+	    $showitems = ($range * 2)+1; 
+	    global $paged;
+	    if(empty($paged)) 
+	    	$paged = 1;
+		if($pages == ''){
+	    	global $wp_query;
+			$pages = $wp_query->max_num_pages;
+			if(!$pages)
+	        	$pages = 1;
+		}  
+	    if(1 != $pages){
+	        $retVal =  '<div class="pagination"><ul><li>'.__('Page','WBootStrap').' '. $paged.' '.__('of','WBootStrap').$pages.'</li>';
+	        if($paged > 2 && $paged > $range+1 && $showitems < $pages) 
+	        	$retVal .= '<li><a href="'.get_pagenum_link(1).'">'.__('&laquo; First','WBootStrap').'</a></li>';
+	        if($paged > 1 && $showitems < $pages) 
+	         	$retVal .= '<li><a href="'.get_pagenum_link($paged - 1).'">'.__('&lsaquo; Previous','WBootStrap').'</a></li>';
+	        for ($i=1; $i <= $pages; $i++){
+	            if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems )){
+					$retVal .= ($paged == $i)? '<li class="active">'.$i.'</li>':'<li><a href=".'.get_pagenum_link($i).'">'.$i.'</a></li>';
+	            }
+	        }
+	 
+	        if ($paged < $pages && $showitems < $pages) 
+	        	$retVal .= '<a href="'.get_pagenum_link($paged + 1).'">'.__('Next &rsaquo;','WBootStrap').'</a>';
+	        if ($paged < $pages-1 &&  $paged+$range-1 < $pages && $showitems < $pages) 
+	        	$retVal .= '<a href="'.get_pagenum_link($pages).'">'.__('Last &raquo;','WBootStrap').'</a></li>';
+	        $retVal .= '</ul></div>';
+
+	        echo apply_filters('WBootStrap_pagination',$retVal);
+	    }
+	}//end WBootStrap_pagination
+}//end if
 
 /**
  * WBootStrap_breadcrumb function
@@ -203,6 +338,5 @@ if (!function_exists('WBootStrap_breadcrumb')){
 		    $retVal .= '</ul></div>';
 		    echo apply_filters('WBootStrap_breadcrumb_filter',$retVal);
 		}
-	}//end function 
+	}//end WBootStrap_breadcrumb 
 }//end if
-
