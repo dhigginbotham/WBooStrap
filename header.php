@@ -16,11 +16,10 @@
 <!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html <?php language_attributes(); ?> class="no-js"><!--<![endif]-->
 <html lang="en">
 	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		
 		<title><?php wp_title('', true, 'right'); ?></title>
-				
+		<meta charset="<?php bloginfo( 'charset' ); ?>" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width; initial-scale=1.0">
 
 		<!-- media-queries.js (fallback) -->
@@ -32,7 +31,7 @@
 		<!--[if lt IE 9]>
 			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
-
+		<link rel="profile" href="http://gmpg.org/xfn/11" />
 		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/bootstrap.css">
 		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.min.css">
 		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/style.css">
@@ -41,6 +40,9 @@
 			padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 		  }
 		</style>
+		<?php //thread_comments JavaScript 
+		 if ( is_singular() && get_option( 'thread_comments' ) ) wp_enqueue_script( 'comment-reply' ); ?>
+    	
 		<link href="<?php echo get_template_directory_uri(); ?>/assets/css/bootstrap-responsive.css" rel="stylesheet">
 
 		<!-- icons -->
