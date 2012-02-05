@@ -84,7 +84,7 @@
 	<header class="jumbotron masthead" id="overview">
       <div class="inner">
         <div class="container">
-			<div class="hero-unit">
+			<div class="well">
 			  <h1>Bootstrap, from Twitter</h1>
 			  <p class="lead">
 				Bootstrap is a toolkit from Twitter designed to kickstart development of webapps and sites.<br>
@@ -96,4 +96,11 @@
       </div>
     </header>
 	
+	
     <div class="container">
+    <div class="row">
+  		<div class="span8">
+   			<?php if (function_exists('WBootStrap_breadcrumb')) WBootStrap_breadcrumb(); ?>
+   		</div><!--/.container -->
+   	</div><!--/.span8 -->
+    	
