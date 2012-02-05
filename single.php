@@ -52,7 +52,7 @@
 			<?php endif; ?>
 			</div><!-- end content container -->
 			
-			<?php get_sidebar(); ?>
+			<?php get_sidebar('blog'); ?>
 			
 		</div><!-- end main container -->
 		
