@@ -14,7 +14,7 @@
 <!--[if IE 7 ]>    <html <?php language_attributes(); ?> class="no-js ie7"> <![endif]-->
 <!--[if IE 8 ]>    <html <?php language_attributes(); ?> class="no-js ie8"> <![endif]-->
 <!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html <?php language_attributes(); ?> class="no-js"><!--<![endif]-->
-<html lang="en">
+<html <?php language_attributes(); ?>>
 	<head>
 		
 		<title><?php wp_title('', true, 'right'); ?></title>
@@ -32,8 +32,19 @@
 			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 		<link rel="profile" href="http://gmpg.org/xfn/11" />
-		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/bootstrap.css">
-		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.min.css">
+		//rtl with responsive support
+		<?php if (is_rtl()) {
+			?>
+			<link rel="stylesheet" href="bootstrap-rtl.min.css">
+			<link rel="stylesheet" href="bootstrap-responsive-rtl.min.css">
+			<?php
+		}else{
+			?>
+			<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/bootstrap.css">
+			<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.min.css">
+			<?php
+		}
+		
 		<link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/style.css">
 		<style>
 		  body {
