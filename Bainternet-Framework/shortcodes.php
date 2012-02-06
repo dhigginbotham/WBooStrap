@@ -38,7 +38,9 @@
 	 			'accordion',
 	 			'acc_section',
 	 			'tabs',
-	 			'tab');
+	 			'tab',
+	 			'tooltip',
+	 			'popover');
  			$this->add_shortcodes();
  		}
 
@@ -50,6 +52,42 @@
  		public function add_shortcodes(){
  			foreach ($this->_shortcodes as $shortcode)
  				add_shortcode($shortcode,array($this,'sh_handler_'.$shortcode));
+ 		}
+
+ 		/**
+ 		 * popover_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * @usage [popover title="a title" hover="hover this"]this will show in popover[/popover]
+ 		 */
+ 		public function sh_handler_popover($atts,$content=NULL){
+ 			extract( shortcode_atts( array(
+			    'title' => ''
+			), $atts ) );
+			wp_enqueue_script('popover.js', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),theme_version, true );
+ 			return '<a data-content="'.$content.'" rel="popover" href="#" data-original-title="$title">$hover</a>'
+ 		}
+
+ 		/**
+ 		 * tooltip_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * @usage [tooltip title="this is a tooltip"]labeled text[/tooltip]
+ 		 */
+ 		public function sh_handler_tooltip($atts,$content=NULL){
+ 			extract( shortcode_atts( array(
+			    'title' => ''
+			), $atts ) );
+			wp_enqueue_script('tooltip.js', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
+ 			return '<a rel="tooltip" href="#" data-original-title="'.$title.'">$content</a>';
  		}
 
 
@@ -310,6 +348,7 @@
 		            $i++;
 		        }
 		        $this->_temp['tabs']['last_count'] = $i;
+		        wp_enqueue_script('tab.js', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),theme_version, true );
 		        $return = '<div class="tabbable'.$location.'">
   								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
 		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>
