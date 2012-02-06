@@ -31,7 +31,14 @@
  		 * 
  		 */
  		public function __constructor(){
- 			$this->_shortcode_list = array('label','alert','button','accordion','acc_section');
+ 			$this->_shortcode_list = array(
+	 			'label',
+	 			'alert',
+	 			'button',
+	 			'accordion',
+	 			'acc_section',
+	 			'tabs',
+	 			'tab');
  			$this->add_shortcodes();
  		}
 
@@ -296,12 +303,13 @@
 		    $this->_temp['tabs']['tab_count'] = 0;
 		    do_shortcode($content)
 		    if( is_array( $this->_temp['tabs']['tabs'] ) ){
-		        $i = 1;
+		        $i = (isset($this->_temp['tabs']['last_count']))? $this->_temp['tabs']['last_count'] : 1;
 		        foreach( $this->_temp['tabs']['tabs'] as $tab ){
 		            $tabs[] = '<li'.$tab['active'].'><a data-toggle="tab" href="#tab'.$i.'">'.$tab['title'].'</a></li>';
 		            $panes[] = '<div id="tab'.$i.'" class="tab-pane">' .$tab['content'].'</div>';
 		            $i++;
 		        }
+		        $this->_temp['tabs']['last_count'] = $i;
 		        $return = '<div class="tabbable'.$location.'">
   								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
 		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>
@@ -310,6 +318,17 @@
 		    return $return;
 		}
 
+		/**
+ 		 * tab_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * see [tab] usage below
+ 		 * @usage [tab title="tab title" active="true"]Tab content[/tab]
+ 		 */
 		function sh_handler_tab( $atts, $content = null ) {
 		    extract( shortcode_atts( array(
 		    'title' => '',
