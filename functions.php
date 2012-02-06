@@ -222,24 +222,24 @@ if (!function_exists('WBootStrap_pagination')){
 	        	$pages = 1;
 		}  
 	    if(1 != $pages){
-	        $retVal =  '<div class="pagination"><ul><li>'.__('Page','WBootStrap').' '. $paged.' '.__('of','WBootStrap').$pages.'</li>';
+	        $retVal =  '<div class="pagination"><ul><li><a>'.__('Page','WBootStrap').' '. $paged.' '.__('of','WBootStrap').$pages.'</a></li>';
 	        if($paged > 2 && $paged > $range+1 && $showitems < $pages) 
 	        	$retVal .= '<li><a href="'.get_pagenum_link(1).'">'.__('&laquo; First','WBootStrap').'</a></li>';
 	        if($paged > 1 && $showitems < $pages) 
 	         	$retVal .= '<li><a href="'.get_pagenum_link($paged - 1).'">'.__('&lsaquo; Previous','WBootStrap').'</a></li>';
 	        for ($i=1; $i <= $pages; $i++){
-	            if (1 != $pages &&( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems )){
-					$retVal .= ($paged == $i)? '<li class="active">'.$i.'</li>':'<li><a href=".'.get_pagenum_link($i).'">'.$i.'</a></li>';
+	            if ( !($i >= $paged+$range+1 || $i <= $paged-$range-1) || $pages <= $showitems ){
+					$retVal .= ($paged == $i)? '<li class="active"><a>'.$i.'</a></li>':'<li><a href="'.get_pagenum_link($i).'">'.$i.'</a></li>';
 	            }
 	        }
 	 
-	        if ($paged < $pages && $showitems < $pages) 
+	        if ($paged < $pages && $showitems < $pages)
 	        	$retVal .= '<a href="'.get_pagenum_link($paged + 1).'">'.__('Next &rsaquo;','WBootStrap').'</a>';
 	        if ($paged < $pages-1 &&  $paged+$range-1 < $pages && $showitems < $pages) 
 	        	$retVal .= '<a href="'.get_pagenum_link($pages).'">'.__('Last &raquo;','WBootStrap').'</a></li>';
 	        $retVal .= '</ul></div>';
 
-	        echo apply_filters('WBootStrap_pagination',$retVal);
+	        echo apply_filters('WBootStrap_pagination_filter',$retVal);
 	    }
 	}//end WBootStrap_pagination
 }//end if
@@ -275,8 +275,9 @@ if (!function_exists('WBootStrap_breadcrumb')){
 		      	$thisCat = $cat_obj->term_id;
 		      	$thisCat = get_category($thisCat);
 		      	$parentCat = get_category($thisCat->parent);
-		      	if ($thisCat->parent != 0) echo(get_category_parents($parentCat, TRUE, ' ' . $delimiter . ' '));
-		      		$retVal .= $before . __('Archive by category','WBootStrap').' "' . single_cat_title('', false) . '"' . $after;
+		      	if ($thisCat->parent != 0)
+		      		$retVal .= (get_category_parents($parentCat, TRUE, ' ' . $delimiter . ' '));
+		      	$retVal .= $before . __('Archive by category','WBootStrap').' "' . single_cat_title('', false) . '"' . $after;
 		    } elseif ( is_day() ) {
 		      	$retVal .= '<li><a href="' . get_year_link(get_the_time('Y')) . '">' . get_the_time('Y') . '</a> ' . $delimiter . '</li> ';
 		      	$retVal .= '<li><a href="' . get_month_link(get_the_time('Y'),get_the_time('m')) . '">' . get_the_time('F') . '</a> ' . $delimiter . '</li> ';
@@ -340,3 +341,26 @@ if (!function_exists('WBootStrap_breadcrumb')){
 		}
 	}//end WBootStrap_breadcrumb 
 }//end if
+
+
+/** BootStrap Goodies **/
+
+// BootStrap JS 
+function WBootStrap_load_js(){
+	wp_enqueue_script('prettify.js', get_template_directory_uri().'/assets/js/prettify.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('transition.js', get_template_directory_uri().'/assets/js/bootstrap-transition.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('alert.js', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('modal.js', get_template_directory_uri().'/assets/js/bootstrap-modal.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('dropdown.js', get_template_directory_uri().'/assets/js/bootstrap-dropdown.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('scrollspy.js', get_template_directory_uri().'/assets/js/bootstrap-scrollspy.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('tab.js', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('tooltip.js', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('popover.js', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),'1.0', true );
+    wp_enqueue_script('button.js', get_template_directory_uri().'/assets/js/bootstrap-button.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('collapse.js', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),'1.0', true );        
+    wp_enqueue_script('carousel.js', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),'1.0', true );    
+    wp_enqueue_script('typeahead.js', get_template_directory_uri().'/assets/js/bootstrap-typeahead.js', array('jquery'),'1.0', true );
+    wp_enqueue_script('tablesorter.js', get_template_directory_uri().'/assets/js/jquery.tablesorter.js', array('jquery'),'1.0', true );
+}
+
+/** End BootStrap Goodies **/
