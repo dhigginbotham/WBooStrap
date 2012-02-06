@@ -120,7 +120,7 @@
 				$retVal .= '<a class="close"';
 				if ($js){
 					$retVal .= ' data-dismiss="alert';
-					wp_enqueue_script('alert.js', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),'1.0', true );
+					wp_enqueue_script('alert', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),'1.0', true );
 				}
 				$retVal .= '>&times;</a>';
 			}
@@ -228,7 +228,7 @@
 		        $temp = $this->_temp;
 		        unset($temp['accordion']['tabs']);
 		        $this->_temp = $temp;
-		        wp_enqueue_script('collapse.js', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),'1.0', true );
+		        wp_enqueue_script('collapse', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),'1.0', true );
 		        $return = '<div class="accordion"'.$con_id.'>'.implode( "\n", $tabs ).'</div>';
 		    }
 		    return $return;
@@ -243,7 +243,6 @@
  		 * @param  [string] $content 
  		 * @return [string]
  		 * 
- 		 * see [acc_section] below
  		 * @usage [acc_section title="collapse title" open="false"]section content[/acc_section]
  		 */
 		public function sh_handler_acc_section( $atts, $content = null ) {
@@ -259,6 +258,67 @@
 			    'open' => ($open)? 'in' : '',
 			);
 		    $this->_temp['accordion']['count'] = $this->_temp['accordion']['count'] + 1;
+		}
+
+		/**
+ 		 * tabs_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * see [tab] usage below
+ 		 * @usage [tabs location="top"][tab][/tab]][/tabs]
+ 		 */
+		public function sh_handler_tabs( $atts, $content = null ) {
+			extract( shortcode_atts( array(
+		    	'location' => 'top',
+			), $atts ) );
+
+			switch ($location) {
+				case 'top':
+					$location = '';
+					break;
+				case 'bottom':
+					$location = ' tabs-below';
+					break;
+				case 'left':
+					$location = ' tabs-left';
+					break;
+				case 'right':
+					$location = ' tabs-right';
+					break;
+				default:
+					$location = '';
+					break;
+			}
+		    $this->_temp['tabs']['tab_count'] = 0;
+		    do_shortcode($content)
+		    if( is_array( $this->_temp['tabs']['tabs'] ) ){
+		        $i = 1;
+		        foreach( $this->_temp['tabs']['tabs'] as $tab ){
+		            $tabs[] = '<li'.$tab['active'].'><a data-toggle="tab" href="#tab'.$i.'">'.$tab['title'].'</a></li>';
+		            $panes[] = '<div id="tab'.$i.'" class="tab-pane">' .$tab['content'].'</div>';
+		            $i++;
+		        }
+		        $return = '<div class="tabbable'.$location.'">
+  								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
+		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>
+		            		</div>';
+		    }
+		    return $return;
+		}
+
+		function sh_handler_tab( $atts, $content = null ) {
+		    extract( shortcode_atts( array(
+		    'title' => '',
+		    'active' => 'false',
+		    ), $atts ) );
+
+		    $i = $this->_temp['tabs']['tab_count'];
+		    $this->_temp['tabs']['tabs'][$i] = array( 'title' => sprintf( $title, $i ), 'content' =>  $content, 'active' => ($active)? ' class="active"':'' );
+		    $this->_temp['tabs']['tab_count'] = $this->_temp['tabs']['tab_count'] + 1;
 		}
 
  	}//end class
