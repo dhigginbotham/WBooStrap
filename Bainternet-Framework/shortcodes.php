@@ -14,13 +14,25 @@
  		
  		/**
  		 * array for shortcode tags
+ 		 * @access protected
  		 */
  		protected $_shortcode_list;
  		
+ 		/**
+ 		 * array for footer js code
+ 		 * @access protected
+ 		 */
+ 		protected $_f_JS;
 
+ 		/**
+ 		 * flag for footer js code
+ 		 * @access protected
+ 		 */
+ 		protected $_f_JS_flag;
 
  		/**
  		 * array for temp container
+ 		 * @access protected
  		 */
  		protected $_temp;
 
@@ -30,7 +42,8 @@
  		 * @since 0.1
  		 * 
  		 */
- 		public function __constructor(){
+ 		public function __construct(){
+ 			$this->_f_JS_flag = false;
  			$this->_shortcode_list = array(
 	 			'label',
 	 			'alert',
@@ -43,7 +56,23 @@
 	 			'popover',
 	 			'carousel',
 	 			'carousel_item');
+ 			add_action('wp_footer',array(&$this ,'footer_js'));
  			$this->add_shortcodes();
+ 		}
+
+ 		public function footer_js(){
+ 			if ($this->_f_JS_flag){
+ 				?>
+ 				<script type="text/javascript">
+ 				jQuery(document).ready(function(){
+ 				<?php
+ 				foreach ($this->_f_JS as $key => $value) {
+ 					echo "//code for ".$key.'
+ 					'.$value ."\n";
+ 				}
+ 				echo '});'."\n";
+ 				echo '</script>'."\n";
+ 			}
  		}
 
  		/**
@@ -52,8 +81,9 @@
  		 * @since 0.1
  		 */
  		public function add_shortcodes(){
- 			foreach ($this->_shortcodes as $shortcode)
- 				add_shortcode($shortcode,array($this,'sh_handler_'.$shortcode));
+ 			foreach ($this->_shortcode_list as $shortcode){
+ 				add_shortcode($shortcode,array(&$this,'sh_handler_'.$shortcode));
+ 			}
  		}
 
  		/**
@@ -68,10 +98,14 @@
  		 */
  		public function sh_handler_popover($atts,$content=NULL){
  			extract( shortcode_atts( array(
-			    'title' => ''
+			    'title' => '',
+			    'hover' => ''
 			), $atts ) );
+			wp_enqueue_script('tooltip', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
 			wp_enqueue_script('popover', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),theme_version, true );
- 			return '<a data-content="'.$content.'" rel="popover" href="#" data-original-title="$title">$hover</a>'
+			$this->_f_JS['popover'] = 'jQuery("a[rel=\'popover\']").popover();';
+			$this->_f_JS_flag = true;
+ 			return '<a data-content="'.$content.'" rel="popover" href="#" data-original-title="'.$title.'">'.$hover.'</a>';
  		}
 
  		/**
@@ -89,7 +123,9 @@
 			    'title' => ''
 			), $atts ) );
 			wp_enqueue_script('tooltip', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
- 			return '<a rel="tooltip" href="#" data-original-title="'.$title.'">$content</a>';
+			$this->_f_JS['tooltip'] = 'jQuery("a[rel=\'tooltip\']").tooltip();';
+			$this->_f_JS_flag = true;
+ 			return '<a rel="tooltip" href="#" data-original-title="'.$title.'">'.$content.'</a>';
  		}
 
 
@@ -136,14 +172,14 @@
  		 * @param  [string] $content 
  		 * @return [string]
  		 * 
- 		 * @usage [alert color="gray" js=false heading="heading text" block=false close=false]text in alert box[/alert]
+ 		 * @usage [alert color="gray" js=false heading="heading text" block="false" close="false"]text in alert box[/alert]
  		 */
  		public function sh_handler_alert($atts,$content=NULL){
  			extract( shortcode_atts( array(
 			    'color' => 'yellow',
 			    'block' => false,
 			    'close' => false,
-			    'heading' => '',
+			    'heading' => false,
 			    'js' => false
 			), $atts ) );
 			switch (strtolower($color)){
@@ -157,16 +193,19 @@
 						$class = ' alert-error';
 						break;
 					case 'yellow':
-						$class = ''
+						$class = '';
+						break;
+					default:
+						$class = '';
 						break;
 			}
 			if ($block)
-				$class .= ' alert-block';
+				$class .= ' alert-block fade in';
 			$retVal = '<div class="alert'.$class.'">';
 			if ($close){
-				$retVal .= '<a class="close"';
+				$retVal .= '<a href="#" class="close"';
 				if ($js){
-					$retVal .= ' data-dismiss="alert';
+					$retVal .= ' data-dismiss="alert"';
 					wp_enqueue_script('alert', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),'1.0', true );
 				}
 				$retVal .= '>&times;</a>';
@@ -252,11 +291,11 @@
 
 		    $this->_temp['accordion']['count'] = 0;
 		    $data_parent = $con_id = '';
-		    do_shortcode($content)
-		    if( isset($this->_temp['accordion']['tabs']) && is_array( $this->_temp['accordion']['tabs'] ) ){
+		    do_shortcode($content);
+		    if( isset($this->_temp['accordion']['tabs']) && is_array( $this->_temp['accordion']['tabs'])){
 		    	$i = isset($this->temp['accordion']['last_count'])? $this->temp['accordion']['last_count'] : 1;
-		    	if ($only_one_open){
-		    		$data_parent = ' data-parent="accordion_'.$i.'"';
+		    	if ($only_one_open == 'true'){
+		    		$data_parent = ' data-parent="#accordion_'.$i.'"';
 		    		$con_id = ' id="accordion_'.$i.'"';
 		    	}
 		        foreach( $this->_temp['accordion']['tabs'] as $tab ){
@@ -349,12 +388,12 @@
 					break;
 			}
 		    $this->_temp['tabs']['tab_count'] = 0;
-		    do_shortcode($content)
+		    do_shortcode($content);
 		    if( is_array( $this->_temp['tabs']['tabs'] ) ){
 		        $i = (isset($this->_temp['tabs']['last_count']))? $this->_temp['tabs']['last_count'] : 1;
 		        foreach( $this->_temp['tabs']['tabs'] as $tab ){
 		            $tabs[] = '<li'.$tab['active'].'><a data-toggle="tab" href="#tab'.$i.'">'.$tab['title'].'</a></li>';
-		            $panes[] = '<div id="tab'.$i.'" class="tab-pane">' .$tab['content'].'</div>';
+		            $panes[] = '<div id="tab'.$i.'" class="tab-pane'.(($tab['active'] != '')? ' active' :'').'">' .$tab['content'].'</div>';
 		            $i++;
 		        }
 		        $this->_temp['tabs']['last_count'] = $i;
@@ -362,10 +401,15 @@
 		        $temp = $this->_temp;
 		        unset($temp['tabs']['tabs']);
 		        $this->_temp = $temp;
-		        $return = '<div class="tabbable'.$location.'">
-  								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
-		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>
-		            		</div>';
+		        $return = '<div class="tabbable'.$location.'">';
+		        if ($location == ' tabs-below'){
+  					$return .= '<div class="tab-content">'.implode( "\n", $panes ).'</div>
+  								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>';
+		        }else{
+		        	$return .= '<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
+		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>';
+		        }
+		        $return .= '</div>';
 		    }
 		    return $return;
 		}
@@ -381,14 +425,14 @@
  		 * see [tab]
  		 * @usage [tab title="tab title" active="true"]Tab content[/tab]
  		 */
-		function sh_handler_tab( $atts, $content = null ) {
+		public function sh_handler_tab( $atts, $content = null ) {
 		    extract( shortcode_atts( array(
 		    'title' => '',
 		    'active' => 'false',
 		    ), $atts ) );
 
 		    $i = $this->_temp['tabs']['tab_count'];
-		    $this->_temp['tabs']['tabs'][$i] = array( 'title' => sprintf( $title, $i ), 'content' =>  $content, 'active' => ($active)? ' class="active"':'' );
+		    $this->_temp['tabs']['tabs'][$i] = array( 'title' => sprintf( $title, $i ), 'content' =>  $content, 'active' => ($active == 'true')? ' class="active"':'' );
 		    $this->_temp['tabs']['tab_count'] = $this->_temp['tabs']['tab_count'] + 1;
 		}
 
@@ -413,15 +457,16 @@
 			), $atts ) );
 
 		    $this->_temp['carousel']['item_count'] = 0;
-		    do_shortcode($content)
+		    do_shortcode($content);
 		    if( is_array( $this->_temp['carousel']['items'] ) ){
 		        $i = (isset($this->_temp['carousel']['last_count']))? $this->_temp['carousel']['last_count'] : 1;
 		        foreach( $this->_temp['carousel']['items'] as $item ){
-		            $tabs[] = '
+		            $items[] = '
 		            <div class="item">
 		            	<img src="'.$item['img'].'" alt="'.$item['alt'].'">
 		            	<div class="carousel-caption">
-		            		'.$item['content'].'
+		            		<h4>'.$item['caption_title'].'</h4>
+		            		<p>'.$item['content'].'</p>
 		            	</div>
 		            </div>';
 		            $i++;
@@ -429,13 +474,15 @@
 		        $this->_temp['carousel']['last_count'] = $i;
 		        $links = '';
 		        if ($nav_links){
-		        	$links = '<a data-slide="prev" href="#myCarousel_'.$i.'" class="left carousel-control">‹</a>
-							  <a data-slide="next" href="#myCarousel_'.$i.'" class="right carousel-control">›</a>';
+		        	$links = '<a data-slide="prev" href="#Carousel_'.$i.'" class="left carousel-control">‹</a>
+							  <a data-slide="next" href="#Carousel_'.$i.'" class="right carousel-control">›</a>';
 		        }
 		        $temp = $this->_temp;
 		        unset($temp['carousel']['items']);
 		        $this->_temp = $temp;
 		        wp_enqueue_script('carousel', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),theme_version, true );    
+		        $this->_f_JS['carousel'] = 'jQuery(".carousel").carousel();';
+				$this->_f_JS_flag = true;
 		        $return = '<div class="carousel slide" id="Carousel_'.$i.'">
     						<div class="carousel-inner">'.implode( "\n", $items ).'</div>
     						'.$links.'
@@ -453,17 +500,18 @@
  		 * @return [string]
  		 * 
  		 * 
- 		 * @usage [carousel_item img="http://www.example.com/img1.jpg" alt="alternative text"]Caption content[/carousel_item]
+ 		 * @usage [carousel_item img="http://www.example.com/img1.jpg" alt="alternative text" title="caption title"]Caption content[/carousel_item]
  		 */
-		function sh_handler_carousel_item( $atts, $content = null ) {
+		public function sh_handler_carousel_item( $atts, $content = null ) {
 		    extract( shortcode_atts( array(
 		    'img' => '',
 		    'alt' => '',
+		    'caption_title' => ''
 		    ), $atts ) );
 
 		    $i = $this->_temp['carousel']['item_count'];
-		    $this->_temp['carousel']['items'][$i] = array('content' =>  $content, 'img' => $img, 'alt' => $alt);
-		    $this->_temp['carousel']['item_count']; = $this->_temp['carousel']['item_count']; + 1;
+		    $this->_temp['carousel']['items'][$i] = array('content' =>  $content, 'img' => $img, 'alt' => $alt, 'caption_title' => $caption_title);
+		    $this->_temp['carousel']['item_count'] = $this->_temp['carousel']['item_count'] + 1;
 		}
 
  	}//end class

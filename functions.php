@@ -71,6 +71,7 @@ function register_custom_menu() {
 	register_nav_menu('top_menu', __('Top Menu'));
 	register_nav_menu('footer_menu', __('Footer Menu'));
 }
+
 /**
  * top_menu_fallback 
  * @author Ohad Raz
@@ -111,28 +112,114 @@ function sidebar_switcher() {
 			jQuery('.widget-liquid-right .widgets-holder-wrap:first').show(); // Show the first
 		 
 			// Start <select> block. Position to the right of the "Widgets" heading.
-			selectorHTML = "<select id=\"sidebarSelector\" style=\"position: absolute; left: 400px; top: 68px;\">\n";
+			selectorHTML = "<select id=\"sidebarSelector\">\n";
 		 
 			var count = 0;
 			for ( var i in sidebars ) // Add option for each widgetized area
 				selectorHTML = selectorHTML + "<option value=\"" + count++ + "\">" + sidebars[i] + "</option>\n"; // Store the index of the widget area in the 'value' attribute
 		 
 			selectorHTML = selectorHTML + "</select>"; // Close the <select> block
-		 
-			jQuery('div.wrap').append(selectorHTML); // Insert it into the DOM
-		 
+		 	jQuery('#available-widgets').before('<div class="widgets-holder-wrap" style="display: block;"><div class="sidebar-name"><div class="sidebar-name-arrow"><br></div><h3><?php _e('Sidebars Advnanced','WBootStrap'); ?><span><img alt="" title="" class="ajax-feedback" src="/images/wpspin_dark.gif"></span></h3></div><div class="widgets-sortables ui-sortable" id="" style="min-height: 50px;"><div class="sidebar-description"><div class="description"><p><?php _e('Select Sidebar To Edit:','WBootStrap'); ?> '+ selectorHTML + '</p></div></div></div></div>');
 			jQuery('#sidebarSelector').change(function(){ // When the user selects something from the select box...
 				index = jQuery(this).val(); // Figure out which one they chose
 				jQuery('.widget-liquid-right .widgets-holder-wrap').hide(); // Hide all the widget areas
 				jQuery('.widget-liquid-right .widgets-holder-wrap:eq(' + index + ')').show(); // And show only the corresponding one
 			});
 		});
+
 		</script>
 		<?php
 	}
 }
 add_action('admin_footer', 'sidebar_switcher');
 
+
+/**
+ * Register widgetized area and update sidebar with default widgets
+ */
+function WBootStrap_sidebar_init() {
+	register_sidebar( array(
+		'name' => 'Page Sidebar',
+		'id' => 'sidebar-page',
+		'description' => 'Sidebar for pages',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => "</aside>",
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	));
+
+	register_sidebar( array(
+		'name' => 'Blog Sidebar',
+		'id' => 'sidebar-posts',
+		'description' => 'Sidebar for blog',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => "</aside>",
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	));
+
+  	register_sidebar(array(
+    	'name' => 'Home Left',
+	    'id'   => 'home-left',
+	    'description'   => 'Left textbox on homepage',
+	    'before_widget' => '<div id="%1$s" class="widget %2$s">',
+	    'after_widget'  => '</div>',
+	    'before_title'  => '<h2>',
+	    'after_title'   => '</h2>'
+	));
+
+    register_sidebar(array(
+    	'name' => 'Home Middle',
+    	'id'   => 'home-middle',
+    	'description'   => 'Middle textbox on homepage',
+    	'before_widget' => '<div id="%1$s" class="widget %2$s">',
+    	'after_widget'  => '</div>',
+    	'before_title'  => '<h2>',
+    	'after_title'   => '</h2>'
+  	));
+
+    register_sidebar(array(
+    	'name' => 'Home Right',
+    	'id'   => 'home-right',
+    	'description'   => 'Right textbox on homepage',
+    	'before_widget' => '<div id="%1$s" class="widget %2$s">',
+    	'after_widget'  => '</div>',
+    	'before_title'  => '<h2>',
+    	'after_title'   => '</h2>'
+  	));
+
+  	register_sidebar(array(
+    	'name' => 'Blog Footer',
+    	'id'   => 'blog-footer',
+    	'description'   => 'Blog footer widgetized area',
+    	'before_widget' => '<div class="span4"><div id="%1$s" class="widget %2$s">',
+    	'after_widget'  => '</div></div>',
+    	'before_title'  => '<h3>',
+    	'after_title'   => '</h3>'
+  	));
+
+  	register_sidebar(array(
+    	'name' => 'Page Footer',
+    	'id'   => 'page-footer',
+    	'description'   => 'pages footer widgetized area',
+    	'before_widget' => '<div class="span4"><div id="%1$s" class="widget %2$s">',
+    	'after_widget'  => '</div></div>',
+    	'before_title'  => '<h3>',
+    	'after_title'   => '</h3>'
+  	));
+
+  	register_sidebar(array(
+    	'name' => 'Home Page Footer',
+    	'id'   => 'home-footer',
+    	'description'   => 'Home page footer widgetized area',
+    	'before_widget' => '<div class="span4"><div id="%1$s" class="widget %2$s">',
+    	'after_widget'  => '</div></div>',
+    	'before_title'  => '<h3>',
+    	'after_title'   => '</h3>'
+  	));
+
+}
+add_action( 'init', 'WBootStrap_sidebar_init' );
 
 
 
@@ -345,60 +432,7 @@ if (!function_exists('WBootStrap_breadcrumb')){
 	}//end WBootStrap_breadcrumb 
 }//end if
 
-/**
- * Register widgetized area and update sidebar with default widgets
- */
-function bootstrapwp_widgets_init() {
-	register_sidebar( array(
-		'name' => 'Page Sidebar',
-		'id' => 'sidebar-page',
-		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
-		'before_title' => '<h3 class="widget-title">',
-		'after_title' => '</h3>',
-	));
 
-	register_sidebar( array(
-		'name' => 'Posts Sidebar',
-		'id' => 'sidebar-posts',
-		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
-		'before_title' => '<h3 class="widget-title">',
-		'after_title' => '</h3>',
-	) );
-
-  	register_sidebar(array(
-	    'name' => 'Home Left',
-	    'id'   => 'home-left',
-	    'description'   => 'Left textbox on homepage',
-	    'before_widget' => '<div id="%1$s" class="widget %2$s">',
-	    'after_widget'  => '</div>',
-	    'before_title'  => '<h2>',
-	    'after_title'   => '</h2>'
-	));
-
-    register_sidebar(array(
-    'name' => 'Home Middle',
-    'id'   => 'home-middle',
-    'description'   => 'Middle textbox on homepage',
-    'before_widget' => '<div id="%1$s" class="widget %2$s">',
-    'after_widget'  => '</div>',
-    'before_title'  => '<h2>',
-    'after_title'   => '</h2>'
-  ));
-
-    register_sidebar(array(
-    'name' => 'Home Right',
-    'id'   => 'home-right',
-    'description'   => 'Right textbox on homepage',
-    'before_widget' => '<div id="%1$s" class="widget %2$s">',
-    'after_widget'  => '</div>',
-    'before_title'  => '<h2>',
-    'after_title'   => '</h2>'
-  ));
-
-}
-add_action( 'init', 'bootstrapwp_widgets_init' );
 /** BootStrap Goodies **/
 
 /**
@@ -416,9 +450,9 @@ add_action( 'init', 'bootstrapwp_widgets_init' );
  */
 function WBootStrap_load_js(){
 	$JS_Files = array(
-		'prettify' => 'prettify.js',
+		'prettify' => 'google-code-prettify/prettify.js',
 		'transition' => 'bootstrap-transition.js',
-		'alert' => 'bootstrap-transition.js',
+		'alert' => 'bootstrap-alert.js',
 		'modal' => 'bootstrap-modal.js',
 		'dropdown' => 'bootstrap-dropdown.js',
 		'scrollspy' => 'bootstrap-scrollspy.js',
@@ -429,7 +463,6 @@ function WBootStrap_load_js(){
 		'collapse' => 'bootstrap-collapse.js',
 		'carousel' => 'bootstrap-carousel.js',
 		'typeahead' => 'bootstrap-typeahead.js',
-		'tablesorter' => 'jquery.tablesorter.js',
 	);
 	$JS_Files = apply_filters('WBootStrap_js_enqueue_filter',$JS_Files);
 	foreach ($JS_Files as $key => $value) {
@@ -438,7 +471,7 @@ function WBootStrap_load_js(){
 	
 	/*
 		//to load manually each script use:
-	wp_enqueue_script('prettify', get_template_directory_uri().'/assets/js/prettify.js', array('jquery'),theme_version, true );
+	wp_enqueue_script('prettify', get_template_directory_uri().'/assets/js/google-code-prettify/prettify.js', array('jquery'),theme_version, true );
     wp_enqueue_script('transition', get_template_directory_uri().'/assets/js/bootstrap-transition.js', array('jquery'),theme_version, true );
     wp_enqueue_script('alert', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),theme_version, true );
     wp_enqueue_script('modal', get_template_directory_uri().'/assets/js/bootstrap-modal.js', array('jquery'),theme_version, true );
@@ -451,7 +484,6 @@ function WBootStrap_load_js(){
     wp_enqueue_script('collapse', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),theme_version, true );        
     wp_enqueue_script('carousel', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),theme_version, true );    
     wp_enqueue_script('typeahead', get_template_directory_uri().'/assets/js/bootstrap-typeahead.js', array('jquery'),theme_version, true );
-    wp_enqueue_script('tablesorter', get_template_directory_uri().'/assets/js/jquery.tablesorter.js', array('jquery'),theme_version, true );
     */
 }
 
@@ -460,8 +492,9 @@ if (!is_admin()){
 	//load script if front end
 	add_action('wp_enqueue_scripts', 'WBootStrap_load_js');
 
-	//load shortcodes
-	include_once('Bainternet-Framework/shortcodes.php')
+	
 }
-
+//load shortcodes
+	include('Bainternet-Framework/shortcodes.php');
+	$sh = new WBootStrap_Shortcodes();
 /** End BootStrap Goodies **/

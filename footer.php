@@ -17,7 +17,7 @@
 				<p class="pull-right"><a href="#">Back to top</a></p>
 				<p class="attribution">&copy; <?php the_time('Y') ?> <?php bloginfo('name'); ?>  <?php _e("is brought to you by", "WBootStrap"); ?> <a href="http://en.bainternet.info" title="WordPress Services">Bainternet WordPress Services</a>, <a href="http://wordpress.org/" title="WordPress">WordPress</a> <span class="amp">&</span> <a href="http://twitter.github.com/bootstrap/" title="Twitter Bootstrap">Twitter Bootstrap</a>.</p>
 			</div> <!-- end #inner-footer -->
-				
+		<?php get_sidebar('footer'); ?>
 		</footer> <!-- end footer -->
 		
 	</div> <!-- end #container -->

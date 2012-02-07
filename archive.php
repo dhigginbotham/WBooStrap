@@ -62,7 +62,7 @@
 				
 			endwhile;
 				if (function_exists('WBootStrap_pagination')) { // if expirimental feature is active 
-					WBootStrap_pagination(); // use the page navi function 
+					WBootStrap_pagination(); // use the WBootStrap_pagination function 
 				} else { // if it is disabled, display regular wp prev & next links ?>
 					<nav class="wp-prev-next">
 						<ul class="clearfix">
