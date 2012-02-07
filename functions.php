@@ -9,6 +9,7 @@
  */
  ?>
 <?php
+define("theme_version", '0.1');
 
 /** Thumbnail support **/
 
@@ -204,6 +205,8 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
  * To override this walker in a child theme without modifying the template
  * simply create your own WBootStrap_pagination(), and that function will be used instead.
  * 
+ * @uses WBootStrap_pagination_filter filter the output of the function
+ * 
  * @author Ohad Raz
  * @since 0.1
  * @param  integer  $pages Max number of pages
@@ -251,7 +254,7 @@ if (!function_exists('WBootStrap_pagination')){
  * To override this walker in a child theme without modifying the template
  * simply create your own WBootStrap_breadcrumb(), and that function will be used instead.
  * 
- * 
+ * @uses WBootStrap_breadcrumb_filter filter the output of the function
  * @author Ohad Raz
  * @since 0.1
  */
@@ -342,25 +345,123 @@ if (!function_exists('WBootStrap_breadcrumb')){
 	}//end WBootStrap_breadcrumb 
 }//end if
 
+/**
+ * Register widgetized area and update sidebar with default widgets
+ */
+function bootstrapwp_widgets_init() {
+	register_sidebar( array(
+		'name' => 'Page Sidebar',
+		'id' => 'sidebar-page',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => "</aside>",
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	));
 
+	register_sidebar( array(
+		'name' => 'Posts Sidebar',
+		'id' => 'sidebar-posts',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => "</aside>",
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	) );
+
+  	register_sidebar(array(
+	    'name' => 'Home Left',
+	    'id'   => 'home-left',
+	    'description'   => 'Left textbox on homepage',
+	    'before_widget' => '<div id="%1$s" class="widget %2$s">',
+	    'after_widget'  => '</div>',
+	    'before_title'  => '<h2>',
+	    'after_title'   => '</h2>'
+	));
+
+    register_sidebar(array(
+    'name' => 'Home Middle',
+    'id'   => 'home-middle',
+    'description'   => 'Middle textbox on homepage',
+    'before_widget' => '<div id="%1$s" class="widget %2$s">',
+    'after_widget'  => '</div>',
+    'before_title'  => '<h2>',
+    'after_title'   => '</h2>'
+  ));
+
+    register_sidebar(array(
+    'name' => 'Home Right',
+    'id'   => 'home-right',
+    'description'   => 'Right textbox on homepage',
+    'before_widget' => '<div id="%1$s" class="widget %2$s">',
+    'after_widget'  => '</div>',
+    'before_title'  => '<h2>',
+    'after_title'   => '</h2>'
+  ));
+
+}
+add_action( 'init', 'bootstrapwp_widgets_init' );
 /** BootStrap Goodies **/
 
-// BootStrap JS 
+/**
+ * WBootStrap_load_js description
+ * 
+ * This function loads all bootstrap JavaScript files.
+ * 
+ * 
+ * 
+ * @uses WBootStrap_js_enqueue_filter you can remove any of the files from the queue with the 
+ * 
+ * 
+ * @author ohad raz
+ * @since 0.1
+ */
 function WBootStrap_load_js(){
-	wp_enqueue_script('prettify.js', get_template_directory_uri().'/assets/js/prettify.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('transition.js', get_template_directory_uri().'/assets/js/bootstrap-transition.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('alert.js', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('modal.js', get_template_directory_uri().'/assets/js/bootstrap-modal.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('dropdown.js', get_template_directory_uri().'/assets/js/bootstrap-dropdown.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('scrollspy.js', get_template_directory_uri().'/assets/js/bootstrap-scrollspy.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('tab.js', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('tooltip.js', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('popover.js', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),'1.0', true );
-    wp_enqueue_script('button.js', get_template_directory_uri().'/assets/js/bootstrap-button.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('collapse.js', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),'1.0', true );        
-    wp_enqueue_script('carousel.js', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),'1.0', true );    
-    wp_enqueue_script('typeahead.js', get_template_directory_uri().'/assets/js/bootstrap-typeahead.js', array('jquery'),'1.0', true );
-    wp_enqueue_script('tablesorter.js', get_template_directory_uri().'/assets/js/jquery.tablesorter.js', array('jquery'),'1.0', true );
+	$JS_Files = array(
+		'prettify' => 'prettify.js',
+		'transition' => 'bootstrap-transition.js',
+		'alert' => 'bootstrap-transition.js',
+		'modal' => 'bootstrap-modal.js',
+		'dropdown' => 'bootstrap-dropdown.js',
+		'scrollspy' => 'bootstrap-scrollspy.js',
+		'tab' => 'bootstrap-tab.js',
+		'tooltip' => 'bootstrap-tooltip.js',
+		'popover' => 'bootstrap-popover.js',
+		'button' => 'bootstrap-button.js',
+		'collapse' => 'bootstrap-collapse.js',
+		'carousel' => 'bootstrap-carousel.js',
+		'typeahead' => 'bootstrap-typeahead.js',
+		'tablesorter' => 'jquery.tablesorter.js',
+	);
+	$JS_Files = apply_filters('WBootStrap_js_enqueue_filter',$JS_Files);
+	foreach ($JS_Files as $key => $value) {
+		wp_enqueue_script($key, get_template_directory_uri().'/assets/js/'.$value, array('jquery'),theme_version, true );
+	}
+	
+	/*
+		//to load manually each script use:
+	wp_enqueue_script('prettify', get_template_directory_uri().'/assets/js/prettify.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('transition', get_template_directory_uri().'/assets/js/bootstrap-transition.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('alert', get_template_directory_uri().'/assets/js/bootstrap-alert.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('modal', get_template_directory_uri().'/assets/js/bootstrap-modal.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('dropdown', get_template_directory_uri().'/assets/js/bootstrap-dropdown.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('scrollspy', get_template_directory_uri().'/assets/js/bootstrap-scrollspy.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('tab', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('tooltip', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('popover', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),theme_version, true );
+    wp_enqueue_script('button', get_template_directory_uri().'/assets/js/bootstrap-button.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('collapse', get_template_directory_uri().'/assets/js/bootstrap-collapse.js', array('jquery'),theme_version, true );        
+    wp_enqueue_script('carousel', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),theme_version, true );    
+    wp_enqueue_script('typeahead', get_template_directory_uri().'/assets/js/bootstrap-typeahead.js', array('jquery'),theme_version, true );
+    wp_enqueue_script('tablesorter', get_template_directory_uri().'/assets/js/jquery.tablesorter.js', array('jquery'),theme_version, true );
+    */
+}
+
+
+if (!is_admin()){
+	//load script if front end
+	add_action('wp_enqueue_scripts', 'WBootStrap_load_js');
+
+	//load shortcodes
+	include_once('Bainternet-Framework/shortcodes.php')
 }
 
 /** End BootStrap Goodies **/
