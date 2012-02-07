@@ -68,7 +68,7 @@
  			extract( shortcode_atts( array(
 			    'title' => ''
 			), $atts ) );
-			wp_enqueue_script('popover.js', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),theme_version, true );
+			wp_enqueue_script('popover', get_template_directory_uri().'/assets/js/bootstrap-popover.js', array('tooltip.js'),theme_version, true );
  			return '<a data-content="'.$content.'" rel="popover" href="#" data-original-title="$title">$hover</a>'
  		}
 
@@ -86,7 +86,7 @@
  			extract( shortcode_atts( array(
 			    'title' => ''
 			), $atts ) );
-			wp_enqueue_script('tooltip.js', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
+			wp_enqueue_script('tooltip', get_template_directory_uri().'/assets/js/bootstrap-tooltip.js', array('jquery'),theme_version, true );
  			return '<a rel="tooltip" href="#" data-original-title="'.$title.'">$content</a>';
  		}
 
@@ -348,7 +348,10 @@
 		            $i++;
 		        }
 		        $this->_temp['tabs']['last_count'] = $i;
-		        wp_enqueue_script('tab.js', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),theme_version, true );
+		        wp_enqueue_script('tab', get_template_directory_uri().'/assets/js/bootstrap-tab.js', array('jquery'),theme_version, true );
+		        $temp = $this->_temp;
+		        unset($temp['tabs']['tabs']);
+		        $this->_temp = $temp;
 		        $return = '<div class="tabbable'.$location.'">
   								<ul class="nav nav-tabs">'.implode( "\n", $tabs ).'</ul>
 		            			<div class="tab-content">'.implode( "\n", $panes ).'</div>
@@ -377,6 +380,80 @@
 		    $i = $this->_temp['tabs']['tab_count'];
 		    $this->_temp['tabs']['tabs'][$i] = array( 'title' => sprintf( $title, $i ), 'content' =>  $content, 'active' => ($active)? ' class="active"':'' );
 		    $this->_temp['tabs']['tab_count'] = $this->_temp['tabs']['tab_count'] + 1;
+		}
+
+		/**
+ 		 * carousel_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * see [carousel_item nav_links="true"] usage below
+ 		 * @usage 
+ 		 * [carousel]
+ 		 * 		[carousel_item] [/carousel_item]
+ 		 * 		[carousel_item] [/carousel_item]
+ 		 * [/carousel]
+ 		 */
+		public function sh_handler_carousel( $atts, $content = null ) {
+			extract( shortcode_atts( array(
+				'nav_links' => true
+			), $atts ) );
+
+		    $this->_temp['carousel']['item_count'] = 0;
+		    do_shortcode($content)
+		    if( is_array( $this->_temp['carousel']['items'] ) ){
+		        $i = (isset($this->_temp['carousel']['last_count']))? $this->_temp['carousel']['last_count'] : 1;
+		        foreach( $this->_temp['carousel']['items'] as $item ){
+		            $tabs[] = '
+		            <div class="item">
+		            	<img src="'.$item['img'].'" alt="'.$item['alt'].'">
+		            	<div class="carousel-caption">
+		            		'.$item['content'].'
+		            	</div>
+		            </div>';
+		            $i++;
+		        }
+		        $this->_temp['carousel']['last_count'] = $i;
+		        $links = '';
+		        if ($nav_links){
+		        	$links = '<a data-slide="prev" href="#myCarousel_'.$i.'" class="left carousel-control">‹</a>
+							  <a data-slide="next" href="#myCarousel_'.$i.'" class="right carousel-control">›</a>';
+		        }
+		        $temp = $this->_temp;
+		        unset($temp['carousel']['items']);
+		        $this->_temp = $temp;
+		        wp_enqueue_script('carousel', get_template_directory_uri().'/assets/js/bootstrap-carousel.js', array('jquery'),theme_version, true );    
+		        $return = '<div class="carousel slide" id="Carousel_'.$i.'">
+    						<div class="carousel-inner">'.implode( "\n", $items ).'</div>
+    						'.$links.'
+		            	  </div>';
+		    }
+		    return $return;
+		}
+
+		/**
+ 		 * carousel_item_shortcode_handler
+ 		 * @author	Ohad Raz
+ 		 * @since	0.1
+ 		 * @param  [array] $atts   array of shortcode attributes
+ 		 * @param  [string] $content 
+ 		 * @return [string]
+ 		 * 
+ 		 * 
+ 		 * @usage [carousel_item img="http://www.example.com/img1.jpg" alt="alternative text"]Caption content[/carousel_item]
+ 		 */
+		function sh_handler_carousel_item( $atts, $content = null ) {
+		    extract( shortcode_atts( array(
+		    'img' => '',
+		    'alt' => '',
+		    ), $atts ) );
+
+		    $i = $this->_temp['carousel']['item_count'];
+		    $this->_temp['carousel']['items'][$i] = array('content' =>  $content, 'img' => $img, 'alt' => $alt);
+		    $this->_temp['carousel']['item_count']; = $this->_temp['carousel']['item_count']; + 1;
 		}
 
  	}//end class
