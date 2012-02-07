@@ -40,7 +40,9 @@
 	 			'tabs',
 	 			'tab',
 	 			'tooltip',
-	 			'popover');
+	 			'popover',
+	 			'carousel',
+	 			'carousel_item');
  			$this->add_shortcodes();
  		}
 
@@ -237,7 +239,11 @@
  		 * @return [string]
  		 * 
  		 * see [acc_section] below
- 		 * @usage [accordion only_one_open="false"][acc_section][/acc_section][/accordion]
+ 		 * @usage 
+ 		 * [accordion only_one_open="false"]
+ 		 * 	[acc_section][/acc_section]
+ 		 * 	[acc_section][/acc_section]
+ 		 * [/accordion]
  		 */
  		public function sh_handler_accordion( $atts, $content = null ) {
 			extract( shortcode_atts( array(
@@ -314,7 +320,11 @@
  		 * @return [string]
  		 * 
  		 * see [tab] usage below
- 		 * @usage [tabs location="top"][tab][/tab]][/tabs]
+ 		 * @usage 
+ 		 * [tabs location="top"]
+ 		 * 	[tab][/tab]
+ 		 *	[tab][/tab]
+ 		 * [/tabs]
  		 */
 		public function sh_handler_tabs( $atts, $content = null ) {
 			extract( shortcode_atts( array(
@@ -368,7 +378,7 @@
  		 * @param  [string] $content 
  		 * @return [string]
  		 * 
- 		 * see [tab] usage below
+ 		 * see [tab]
  		 * @usage [tab title="tab title" active="true"]Tab content[/tab]
  		 */
 		function sh_handler_tab( $atts, $content = null ) {
@@ -390,9 +400,9 @@
  		 * @param  [string] $content 
  		 * @return [string]
  		 * 
- 		 * see [carousel_item nav_links="true"] usage below
+ 		 * see [carousel_item] usage below
  		 * @usage 
- 		 * [carousel]
+ 		 * [carousel nav_links="true"]
  		 * 		[carousel_item] [/carousel_item]
  		 * 		[carousel_item] [/carousel_item]
  		 * [/carousel]
