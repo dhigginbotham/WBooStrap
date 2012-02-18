@@ -161,7 +161,7 @@ function WBootStrap_sidebar_init() {
   	register_sidebar(array(
     	'name' => 'Home Left',
 	    'id'   => 'home-left',
-	    'description'   => 'Left textbox on homepage',
+	    'description'   => 'Left Sidebar on homepage',
 	    'before_widget' => '<div id="%1$s" class="widget %2$s">',
 	    'after_widget'  => '</div>',
 	    'before_title'  => '<h2>',
@@ -171,7 +171,7 @@ function WBootStrap_sidebar_init() {
     register_sidebar(array(
     	'name' => 'Home Middle',
     	'id'   => 'home-middle',
-    	'description'   => 'Middle textbox on homepage',
+    	'description'   => 'Middle Sidebar on homepage',
     	'before_widget' => '<div id="%1$s" class="widget %2$s">',
     	'after_widget'  => '</div>',
     	'before_title'  => '<h2>',
@@ -181,7 +181,7 @@ function WBootStrap_sidebar_init() {
     register_sidebar(array(
     	'name' => 'Home Right',
     	'id'   => 'home-right',
-    	'description'   => 'Right textbox on homepage',
+    	'description'   => 'Right Sidebar on homepage',
     	'before_widget' => '<div id="%1$s" class="widget %2$s">',
     	'after_widget'  => '</div>',
     	'before_title'  => '<h2>',
@@ -284,6 +284,47 @@ if ( ! function_exists( 'WBootStrap_comment' ) ) {
 		}//end switch
 	}//end function 
 } // ends if
+
+
+/**
+ * 
+ * WBootStrap_next_prev_nav
+ * 
+ * Display navigation to next/previous pages when applicable
+ * To override this walker in a child theme without modifying the template
+ * simply create your own WBootStrap_pagination(), and that function will be used instead.
+ * 
+ * @uses previous_post_link
+ * @uses next_post_link
+ * 
+ * 
+ * @author Ohad Raz
+ * @since 0.1
+*/
+if ( ! function_exists( 'WBootStrap_next_prev_nav' ) ){	
+	function WBootStrap_next_prev_nav( $nav_id ) {
+		global $wp_query;
+		if ( is_single() ){ // navigation links for single posts ?>
+			<ul class="pager">
+				<?php 
+				previous_post_link( '<li class="previous pull-left">%link</li>', '<span class="meta-nav">' . _x( '&larr;', 'Previous post link', 'WBootStrap' ) . '</span> %title' );
+				next_post_link( '<li class="next pull-right">%link</li>', '%title <span class="meta-nav">' . _x( '&rarr;', 'Next post link', 'WBootStrap' ) . '</span>' );
+				?>
+			</ul>
+			<?php
+		} elseif ( $wp_query->max_num_pages > 1 && ( is_home() || is_archive() || is_search() ) ) { // navigation links for home, archive, and search pages ?>
+			<ul class="pager">
+				<?php 
+				if ( get_next_posts_link() ) { ?>
+					<li class="next pull-right"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older posts', 'WBootStrap' ) ); ?></li>
+				<?php } 
+				if ( get_previous_posts_link() ) { ?>
+					<li class="previous pull-left"><?php previous_posts_link( __( 'Newer posts <span class="meta-nav">&rarr;</span>', 'WBootStrap' ) ); ?></li>
+				<?php } ?>
+			</ul>
+		<?php } 
+	}// End WBootStrap_next_prev_nav
+}//end if
 
 /**
  * WBootStrap_pagination 
@@ -440,8 +481,6 @@ if (!function_exists('WBootStrap_breadcrumb')){
  * 
  * This function loads all bootstrap JavaScript files.
  * 
- * 
- * 
  * @uses WBootStrap_js_enqueue_filter you can remove any of the files from the queue with the 
  * 
  * 
@@ -498,3 +537,6 @@ if (!is_admin()){
 	include('Bainternet-Framework/shortcodes.php');
 	$sh = new WBootStrap_Shortcodes();
 /** End BootStrap Goodies **/
+
+/** Admin Panel **/
+
